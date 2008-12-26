@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+
+# A basic example similar to the "lspci" command, but using
+# HAL as the data source.
+
+use strict;
+use Hardware::HAL;
+
+my @devices = Hardware::HAL->devices_by_subsystem('pci');
+
+foreach my $device (@devices) {
+    my $name = $device->property_value('pci.product') || $device->product_name;
+    my $vendor_name = $device->property_value('pci.vendor') || $device->vendor_name;
+    printf("%-25s%s\n", $vendor_name, $name);
+}
+

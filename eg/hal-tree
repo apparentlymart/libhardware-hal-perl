@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+# Shows the devices from HAL assembled into a tree structure.
+# It does this by recursively calling the "child_devices" method.
+# You could also do this by fetching everything and then
+# jiggering it into a tree structure in Perl-land, but that's
+# left as an exercise.
+
+use strict;
+use Hardware::HAL;
+
+my $computer = Hardware::HAL->computer;
+
+print_device_and_children($computer);
+
+sub print_device_and_children {
+    my ($device, $depth) = @_;
+
+    $depth ||= 0;
+
+    my $name = $device->product_name || '(unnamed '.$device->category.' device)';
+    $name =~ s/^\s+//g; # Some devices have whitespace at the start of their names!?
+
+    print "  " x $depth;
+    print $name, "\n";
+    foreach my $child ($device->child_devices) {
+        print_device_and_children($child, $depth + 1);
+    }
+}
+

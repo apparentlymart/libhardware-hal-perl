@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+
+# This example uses HAL to produce something resembling
+# the first line of the info given by "ifconfig".
+
+use strict;
+use Hardware::HAL;
+
+# This is sufficient just as an example
+my %link_types = (
+    1 => 'Ethernet',
+);
+
+my @interfaces = Hardware::HAL->devices_with_capability('net');
+
+foreach my $interface (@interfaces) {
+    my $name = $interface->property_value('net.interface');
+    my $arp_type = $interface->property_value('net.arp_proto_hw_id');
+    my $link_encap = $link_types{$arp_type} || 'UNSPEC';
+    my $hwaddr = $interface->property_value('net.address');
+    printf("%-10s", $name);
+    print "Link encap:$link_encap";
+    print "  HWaddr ".$hwaddr if $hwaddr;
+    print "\n";
+}
+
+
